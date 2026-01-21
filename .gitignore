@@ -42,7 +42,7 @@ backend/build/
 
 backend/uploads/products
 
-application.properties
+backend/src/main/resources/application.properties
 
 ############################
 # IDEs
