@@ -1,0 +1,58 @@
+############################
+# General
+############################
+.DS_Store
+*.log
+logs/
+tmp/
+temp/
+
+############################
+# Node / React
+############################
+frontend/node_modules/
+frontend/build/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+############################
+# Java / Spring Boot
+############################
+backend/target/
+backend/*.jar
+backend/*.war
+backend/*.ear
+backend/.env
+
+############################
+# Maven / Gradle
+############################
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+backend/.gradle/
+backend/build/
+
+############################
+# IDEs
+############################
+.idea/
+.vscode/
+*.iml
+.classpath
+.project
+.settings/
+
+############################
+# OS / Editor
+############################
+*.swp
+*.swo
+*~
