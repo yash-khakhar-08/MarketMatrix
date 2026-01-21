@@ -40,6 +40,10 @@ backend/mvnw.cmd
 backend/.gradle/
 backend/build/
 
+backend/uploads/products
+
+application.properties
+
 ############################
 # IDEs
 ############################

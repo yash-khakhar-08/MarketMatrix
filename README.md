@@ -10,9 +10,10 @@ The backend used REST API developed in Spring Boot for clean, structured code wi
 ✅ Add to cart and place order
 ✅ View order and cancel order
 
-## Features (Admin side) (in developing)
+## Features (Admin side)
 ✅ Admin authentication (Login)  
-✅ Add category and Product  
+✅ Manage category and Product  
+✅ Manage Customers and Orders  
 
 ## Technologies Used
 - **REST API build in Spring Boot MVC Architecture** (Backend)
