@@ -102,6 +102,9 @@ const ViewOrderPage = () => {
                 <p className="price">Subtotal: {order.purchaseAmt}</p>
                 <div className="order-info mt-2">
                 <p className="mb-1">
+                    <strong>Order Id:</strong> {order.id}
+                </p>
+                <p className="mb-1">
                     <strong>Date of Order:</strong>{" "}
                     {new Date(order.date).toLocaleString("en-IN", dateOptions)}
                 </p>

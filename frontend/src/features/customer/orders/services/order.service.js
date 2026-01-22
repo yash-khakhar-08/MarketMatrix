@@ -43,3 +43,46 @@ export const makeOrder = async (token, userId, paymentMode) => {
     })
 
 }
+
+export const createPaymentIntent = async (token, payload) => {
+
+    const response = await fetch(`${BACKEND_API_URL}/user/payments/create-intent`,{
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+
+    })
+
+    const data = await response.json()
+
+    if(!response.ok){
+        throw new Error(data.message)
+    }
+
+    return data
+}
+
+export const rollbackPayment = async (token, payload) => {
+
+    const response = await fetch(`${BACKEND_API_URL}/user/payments/refund`,{
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+
+    })
+
+    const data = await response.json()
+
+    if(!response.ok){
+        throw new Error(data.message)
+    }
+
+    return data
+
+}

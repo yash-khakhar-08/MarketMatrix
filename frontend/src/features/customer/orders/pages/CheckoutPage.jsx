@@ -13,7 +13,6 @@ const CheckoutPage = () => {
 
     const [paymentMode, setPaymentMode] = useState("COD")
     const [showAddressModal, setShowAddressModal] = useState(false)
-    const [showPaymentModal, setShowPaymentModal] = useState(false)
 
     const [address, setAddress] = useState({
         blockNo: "",
@@ -22,13 +21,6 @@ const CheckoutPage = () => {
         state: "",
         pinCode: "",
         country: ""
-    })
-
-    const [card, setCard] = useState({
-        number: "",
-        holder: "",
-        expiry: "",
-        cvv: ""
     })
 
     const totalAmount = useMemo(
@@ -71,10 +63,6 @@ const CheckoutPage = () => {
     }
 
     const placeOrder = async () => {
-        if (!customer.address) {
-            alert("Address is required to place order!")
-            return
-        }
 
         try {
             await makeOrder(token, customer.id, paymentMode)
@@ -84,39 +72,21 @@ const CheckoutPage = () => {
         } catch (err) {
             console.error(err)
             alert("Failed to place order. Try again!")
-        } finally {
-            setShowPaymentModal(false)
         }
     }
 
     const handlePayment = () => {
+
+        if (!customer.address) {
+            alert("Address is required to place order!")
+            return
+        }
+
         if (paymentMode === "COD") {
             placeOrder()
         } else {
-            setShowPaymentModal(true)
+            navigate("/payment", { state: { token, totalAmount, customerId: customer.id } })
         }
-    }
-
-    const handleCardChange = (e) => {
-        const { name, value } = e.target
-        setCard((prev) => ({ ...prev, [name]: value }))
-    }
-
-    const handleCardSubmit = () => {
-
-        const { number, holder, expiry, cvv } = card
-
-        if (!number.trim() || !holder.trim() || !expiry.trim() || !cvv.trim()) {
-            alert("All card fields are required!")
-            return
-        }
-
-        if(cvv.length !== 3){
-            alert("CVV must ne of 3 digits")
-            return
-        }
-
-        placeOrder()
     }
 
     return (
@@ -177,7 +147,7 @@ const CheckoutPage = () => {
                 checked={paymentMode === "Card"}
                 onChange={() => handlePaymentModeChange("Card")}
                 />
-                <label className="form-check-label">Debit/Credit Card</label>
+                <label className="form-check-label">Stripe Pay</label>
             </div>
 
             <button
@@ -227,41 +197,6 @@ const CheckoutPage = () => {
             </div>
         )}
 
-        {/* Card Payment Modal */}
-        {showPaymentModal && (
-            <div className="modal show d-block" tabIndex="-1">
-            <div className="modal-dialog">
-                <div className="modal-content">
-                <div className="modal-header">
-                    <h5>Enter Card Details</h5>
-                    <button
-                    type="button"
-                    className="btn-close"
-                    onClick={() => setShowPaymentModal(false)}
-                    />
-                </div>
-                <div className="modal-body">
-                    {["number","holder","expiry","cvv"].map((field) => (
-                    <div className="form-group mb-2" key={field}>
-                        <label>{field === "holder" ? "Card Holder Name" : field}</label>
-                        <input
-                        type={field === "cvv" ? "password" : "text"}
-                        className="form-control"
-                        name={field}
-                        value={card[field]}
-                        onChange={handleCardChange}
-                        />
-                    </div>
-                    ))}
-                </div>
-                <div className="modal-footer">
-                    <button className="btn btn-secondary" onClick={() => setShowPaymentModal(false)}>Cancel</button>
-                    <button className="btn btn-primary" onClick={handleCardSubmit}>Submit Payment</button>
-                </div>
-                </div>
-            </div>
-            </div>
-        )}
         </div>
     )
 }

@@ -30,7 +30,7 @@ const Header = () => {
     useEffect(() => {
 
       if (!debouncedTerm.trim()){
-        navigate(-1, {replace: true})
+        return
       }
 
       const fetchProducts = async () => {

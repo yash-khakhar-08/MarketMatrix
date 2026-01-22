@@ -13,6 +13,7 @@ import AdminLayout from "../features/admin/layouts/AdminLayout"
 import AdminRoute from "./AdminRoute"
 import UnauthorizedAccessPage from "../app/pages/UnauthorizedAccessPage"
 import EditProfilePage from "../features/customer/profile/pages/EditProfilePage"
+import StripeLayout from "../layouts/StripeLayout"
 
 import {
     CheckoutPage,
@@ -36,6 +37,9 @@ import {
     OrdersPage,
     EditOrderPage
 } from "../features/admin"
+import PaymentPage from "../features/customer/orders/pages/PaymentPage"
+import PaymentSuccess from "../features/customer/orders/pages/PaymentSuccess"
+import PaymentFailure from "../features/customer/orders/pages/PaymentFailure"
 
 const AppRoutes = () => {
     return (
@@ -56,7 +60,10 @@ const AppRoutes = () => {
 
                 <Route element={<ProtectedRoute />}>
                     <Route path="/cart" element={<CartPage />} />
-                    <Route path="/checkout" element={<CheckoutPage />} />
+                    <Route path="/checkout" element={<CheckoutPage /> } />
+                    <Route path="/payment" element={<StripeLayout><PaymentPage /></StripeLayout>} />
+                    <Route path="/payment/success" element={<PaymentSuccess />} />
+                    <Route path="/payment/failure" element={<PaymentFailure />} />
                     <Route path="/orders" element={<ViewOrderPage />} />
                     <Route path="/editProfile" element={<EditProfilePage />} />
                 </Route>

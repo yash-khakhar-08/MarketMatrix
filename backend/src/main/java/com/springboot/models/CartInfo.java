@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.springboot.models;
 
 import jakarta.persistence.Entity;
@@ -13,11 +9,6 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import java.util.Date;
 import org.hibernate.annotations.CreationTimestamp;
-
-/**
- *
- * @author Yash
- */
 
 @Entity
 public class CartInfo {

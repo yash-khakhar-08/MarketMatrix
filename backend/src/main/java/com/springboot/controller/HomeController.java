@@ -34,6 +34,7 @@ import com.springboot.service.ProductService;
 import com.springboot.service.UserService;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.transaction.Transactional;
 
 @RestController
 public class HomeController {
@@ -278,15 +279,29 @@ public class HomeController {
     }
     
     @PostMapping("/user/placeOrder")
+    @Transactional
     public ResponseEntity<?> placeOrder(@RequestBody Map<String,String> data) {
         
-        boolean isOrderPlaced = orderService.saveOrder(Integer.parseInt(data.get("userId")), data.get("paymentMode"));
-        
-        if(isOrderPlaced){
-            return new ResponseEntity<>("Order Placed",HttpStatus.OK); 
-        }
-        
-        return new ResponseEntity<>("Order did not Placed",HttpStatus.INTERNAL_SERVER_ERROR); 
+        ResponseMessageDto response = new ResponseMessageDto();
+
+        try{
+
+            boolean isOrderPlaced = orderService.saveOrder(
+                Integer.parseInt(data.get("userId")), 
+                data.get("paymentMode")
+            );
+            
+            if(!isOrderPlaced){
+                throw new RuntimeException("Internal Server Error");
+            }
+
+            response.setMessage("Order Placed");
+            return new ResponseEntity<>(response, HttpStatus.OK); 
+
+        } catch(Exception e){
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }   
         
     }
     
