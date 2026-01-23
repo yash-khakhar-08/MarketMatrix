@@ -37,3 +37,83 @@ export const login = async (payload) => {
     return data
 
 }
+
+export const verifyEmail = async (payload) => {
+
+    const response = await fetch(`${BACKEND_API_URL}/api/auth/verifyEmail`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    })
+
+    const data = await response.json()
+
+    if(!response.ok){
+        throw new Error(data.message)
+    }
+
+    return data
+
+}
+
+export const verifyOtpCode = async (payload) => {
+
+    const response = await fetch(`${BACKEND_API_URL}/api/auth/verifyOtpCode`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    })
+
+    const data = await response.json()
+
+    if(!response.ok){
+        throw new Error(data.message)
+    }
+
+    return data
+
+}
+
+export const changePassword = async (payload) => {
+
+    const response = await fetch(`${BACKEND_API_URL}/api/auth/updatePassword`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    })
+
+    const data = await response.json()
+
+    if(!response.ok){
+        throw new Error(data.message)
+    }
+
+    return data
+
+}
+
+export const verifyAccount = async (payload) => {
+
+    const response = await fetch(`${BACKEND_API_URL}/api/auth/verifyAccount`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    })
+
+    const data = await response.json()
+
+    if(!response.ok){
+        throw new Error(data.message)
+    }
+
+    return data
+
+}

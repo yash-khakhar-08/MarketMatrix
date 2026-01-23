@@ -24,7 +24,7 @@ const CheckoutPage = () => {
     })
 
     const totalAmount = useMemo(
-        () => cart.reduce((sum, item) => sum + item.purchaseAmt, 0),
+        () => cart.reduce((sum, item) => sum + (item.product.productQty > 0 ? item.purchaseAmt : 0), 0),
         [cart]
     )
 
@@ -66,9 +66,9 @@ const CheckoutPage = () => {
 
         try {
             await makeOrder(token, customer.id, paymentMode)
-            persistAuth(customer, []) 
+            persistAuth(customer, cart.filter(item => item.product.productQty === 0)) 
             alert("Order placed successfully!")
-            navigate('/orders')
+            navigate('/orders', {replace: true})
         } catch (err) {
             console.error(err)
             alert("Failed to place order. Try again!")
@@ -150,6 +150,7 @@ const CheckoutPage = () => {
                 <label className="form-check-label">Stripe Pay</label>
             </div>
 
+            {totalAmount > 0 && 
             <button
                 type="button"
                 className="btn btn-success btn-block mt-4"
@@ -157,6 +158,7 @@ const CheckoutPage = () => {
             >
                 {paymentMode === "COD" ? "Place Order" : "Make Payment"}
             </button>
+            }
             </form>
         </div>
 

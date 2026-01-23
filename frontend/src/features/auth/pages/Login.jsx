@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux"
 import Logo from "../../../logo.png"
 import { login } from "../services/auth.service"
 import { setAuthData } from "../authSlice"
+import Swal from "sweetalert2"
 
 const Login = () => {
 
@@ -51,7 +52,17 @@ const Login = () => {
             }
 
         } catch (err) {
+
+            if(err?.message === 'Account Verification is pending'){
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Account Verification',
+                    text: 'Account Verification Link is sent to your registered email. Please Verify your Accouunt.'
+                })
+            }
+            
             setError(err?.message || "Invalid email or password")
+
         } finally {
             setLoading(false)
         }

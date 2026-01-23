@@ -1,8 +1,6 @@
 import { Routes, Route } from "react-router-dom"
 
 import AuthLayout from "../layouts/AuthLayout"
-import Register from '../features/auth/pages/Register'
-import Login from '../features/auth/pages/Login'
 import CustomerLayout from "../layouts/CustomerLayout"
 import CartPage from "../features/customer/cart/pages/CartPage"
 import ProductInfo from "../features/customer/products/pages/ProductInfo"
@@ -37,6 +35,14 @@ import {
     OrdersPage,
     EditOrderPage
 } from "../features/admin"
+
+import { 
+    Login,
+    Register,
+    ForgotPasswordPage,
+    AccountActivationPage
+} from "../features/auth"
+
 import PaymentPage from "../features/customer/orders/pages/PaymentPage"
 import PaymentSuccess from "../features/customer/orders/pages/PaymentSuccess"
 import PaymentFailure from "../features/customer/orders/pages/PaymentFailure"
@@ -48,6 +54,8 @@ const AppRoutes = () => {
             <Route element={<AuthLayout />}>
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/verify-account" element={<AccountActivationPage />} />
             </Route>
 
             <Route element={<CustomerLayout />}>

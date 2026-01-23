@@ -46,11 +46,13 @@ const ProductInfo = () => {
     )
 
     const increaseQuantity = () => {
+        if(product.productQty === 0) return
         const max = Math.min(product.productQty, MAX_QTY)
         setQty(q => Math.min(q + 1, max))
     }
 
     const decreaseQuantity = () => {
+        if(product.productQty === 0) return
         setQty(q => Math.max(q - 1, 1))
     }
 

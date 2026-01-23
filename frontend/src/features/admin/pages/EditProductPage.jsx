@@ -182,6 +182,7 @@ const EditProductPage = () => {
                 <div className="col-md-6 mb-3">
                     <label className="form-label">Quantity</label>
                     <input
+                    min="0"
                     type="number"
                     name="productQty"
                     className="form-control"

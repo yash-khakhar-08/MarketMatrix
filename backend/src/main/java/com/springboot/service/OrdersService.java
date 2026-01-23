@@ -38,23 +38,26 @@ public class OrdersService {
 
                 for(CartInfo cart: cartInfo){
 
-                    Orders orders = new Orders();
-                    orders.setPaymentMode(paymentMode);
-                    orders.setProduct(cart.getProduct());
-                    orders.setPurchaseAmt(cart.getPurchaseAmt());
-                    orders.setPurchaseQty(cart.getPurchaseQty());
-                    orders.setStatus("Pending");
-                    orders.setUser(cart.getUser());
+                    if(cart.getProduct().getProductQty() > 0){
 
-                    ordersRepo.save(orders);
-                    
-                    Product product = cart.getProduct();
-                    product.setProductQty( product.getProductQty() - cart.getPurchaseQty() );
-                    productRepo.save(product);
-                    
-                    cartInfoService.removeFromCart(cart.getId());
-                    
+                        Orders orders = new Orders();
+                        orders.setPaymentMode(paymentMode);
+                        orders.setProduct(cart.getProduct());
+                        orders.setPurchaseAmt(cart.getPurchaseAmt());
+                        orders.setPurchaseQty(cart.getPurchaseQty());
+                        orders.setStatus("Pending");
+                        orders.setUser(cart.getUser());
 
+                        ordersRepo.save(orders);
+                        
+                        Product product = cart.getProduct();
+                        product.setProductQty( product.getProductQty() - cart.getPurchaseQty() );
+                        productRepo.save(product);
+                        
+                        cartInfoService.removeFromCart(cart.getId());
+
+                    }
+                    
                 }
 
                 return true;
@@ -117,14 +120,15 @@ public class OrdersService {
             Orders orders = ordersRepo.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
             
             if(orders != null && !ObjectUtils.isEmpty(orders)){
+
                 orders.setStatus("Canceled");
                 ordersRepo.save(orders);
 
                 Product product = orders.getProduct();
-                product.setProductQty(product.getProductQty() +orders.getPurchaseQty() );
+                product.setProductQty(product.getProductQty() + orders.getPurchaseQty());
                 productRepo.save(product);
                 
-                 return true;
+                return true;
             }
             
         } catch(Exception e){
@@ -187,6 +191,14 @@ public class OrdersService {
         Orders orders = getOrderById(Integer.valueOf(orderId));
 
         orders.setStatus(status);
+
+        if(status.equals("Canceled")){
+
+            Product product = orders.getProduct();
+            product.setProductQty(product.getProductQty() + orders.getPurchaseQty());
+            productRepo.save(product);
+
+        }
 
         ordersRepo.save(orders);
 

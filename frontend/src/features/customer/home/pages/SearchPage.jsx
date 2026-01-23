@@ -110,14 +110,17 @@ export default function SearchPage() {
                                     >
                                         Go to Cart
                                     </button>
-                                ) : (
-                                    <button
-                                        className="btn btn-success w-100"
-                                        onClick={() => handleAddToCart(product)}
-                                    >
+                                ) : product.productQty === 0 ?  
+
+                                    <button className="btn btn-success w-100">
+                                            Out Of Stock
+                                    </button> :
+
+                                    <button className="btn btn-success w-100"
+                                        onClick={() => handleAddToCart(product)}>
                                         Add to Cart
                                     </button>
-                                )}
+                                }
                             </div>
                         </div>
                     </div>

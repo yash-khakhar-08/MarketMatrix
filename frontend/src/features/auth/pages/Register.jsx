@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import Logo from "../../../logo.png"
 import { register } from "../services/auth.service"
+import Swal from "sweetalert2"
 
 const Register = () => {
 
@@ -64,6 +65,12 @@ const Register = () => {
             return
         }
 
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^()_+\-=[\]{};':"\\|,.<>/?]).{8,12}$/;
+        if (!passwordRegex.test(formData.password)) {
+            setError("Please enter a valid password with format. Minimum 8 and Maximum 12 character. Atleast One Upper case, One Lower case character and atleast One digit and One symbol.")
+            return
+        }
+
         if (formData.password !== formData.confirmPassword) {
             setError("Passwords do not match")
             return
@@ -72,6 +79,7 @@ const Register = () => {
         setLoading(true)
 
         try {
+
             await register({
                 fullName: formData.fullName.trim(),
                 email: formData.email.trim(),
@@ -80,7 +88,11 @@ const Register = () => {
                 mobileNo: formData.mobileNo.trim()
             })
 
-            alert("Account Created!!")
+            Swal.fire({
+                icon: 'info',
+                title: 'Account Verification',
+                text: 'Account Verification Link is sent to your registered email. Please Verify your Accouunt.'
+            })
 
             navigate("/login", { replace: true })
 

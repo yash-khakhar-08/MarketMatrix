@@ -4,12 +4,18 @@ import Swal from 'sweetalert2'
 import '../../../../cart.css'
 import { updateCartItemQuantity, removeCartItem } from "../services/cart.service"
 import { setAuthData } from "../../../auth/authSlice"
+import { useMemo } from "react"
 
 const MAX_QTY = 3
 
 const CartPage = () => {
 
     const {customer, cart, token} = useSelector(state => state.auth)
+
+    const totalAmount = useMemo(
+        () => cart.reduce((sum, item) => sum + (item.product.productQty > 0 ? item.purchaseAmt : 0), 0),
+        [cart]
+    )
 
     const dispatch = useDispatch()
 
@@ -46,6 +52,7 @@ const CartPage = () => {
         }
 
         try {
+
             await updateCartItemQuantity(token, updatedItem)
 
             const updatedCart = cart.map(item =>
@@ -92,12 +99,19 @@ const CartPage = () => {
         
     }
 
-    const handleCheckout = () => {
+    const handleCheckout = async () => {
 
         let stockAdjusted = false
+        let updatedItem
+
         const updatedCart = cart.map(item => {
-            if (item.purchaseQty > item.product.productQty) {
+            if (item.product.productQty > 0 && item.purchaseQty > item.product.productQty) {
                 stockAdjusted = true
+                updatedItem = {
+                    ...item,
+                    purchaseQty: 1,
+                    purchaseAmt: item.product.productPrice
+                }
                 return {
                     ...item,
                     purchaseQty: 1,
@@ -108,14 +122,25 @@ const CartPage = () => {
         })
 
         if (stockAdjusted) {
-            Swal.fire({
-                icon: 'info',
-                title: 'Stock limit alert',
-                text: 'Some items in your cart exceed available stock. Quantities have been adjusted accordingly.'
-            })
-        }
 
-        updateCartState(updatedCart)
+            try{
+
+                await updateCartItemQuantity(token, updatedItem)
+
+                updateCartState(updatedCart)
+
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Stock limit alert',
+                    text: `${updatedItem.product.productName} in your cart exceed available stock. Quantity have been adjusted.`
+                })
+
+            } catch(error){
+                console.log(error.message)
+            }
+
+            return
+        }
     
         navigate('/checkout')
     }
@@ -181,7 +206,7 @@ const CartPage = () => {
                                 </>
                                 }
 
-                                { value.product.productQty === 0 && 
+                                { value.product.productQty <= 0 && 
                                 <div>
                                     <span className="remove-btn d-block">
                                     Out of Stock
@@ -200,14 +225,12 @@ const CartPage = () => {
                     ))}
                 </div>
 
+                {totalAmount > 0 && 
                 <div className="cart-summary p-3 bg-white mt-3 shadow-sm d-flex justify-content-between align-items-center">
                     <h4>
                         Total:{' '}
                         <span className="text-danger grand-total">
-                            {cart.reduce(
-                                (sum, item) => sum + (item.product.productQty > 0 ? item.purchaseAmt : 0),
-                                0
-                            )}{' '}
+                            {totalAmount}
                             rs
                         </span>
                     </h4>
@@ -216,6 +239,7 @@ const CartPage = () => {
                         Proceed to Checkout
                     </button>
                 </div>
+                }
             </div>
             ) : (
                 <div className="container mt-5">

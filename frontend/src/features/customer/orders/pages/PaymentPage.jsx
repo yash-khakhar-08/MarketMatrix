@@ -36,18 +36,20 @@ const PaymentPage = () => {
     const { state } = useLocation()
     const totalAmount = state?.totalAmount
 
-    const { customer, token } = useSelector(state => state.auth)
+    const { customer, cart, token } = useSelector(state => state.auth)
     const dispatch = useDispatch()
 
     const [loading, setLoading] = useState(false)
 
     const persistAuth = () => {
 
-        dispatch(setAuthData({ token, customer, cart: [] }))
+        const updatedCart = cart.filter(item => item.product.productQty === 0)
+
+        dispatch(setAuthData({ token, customer, cart: updatedCart }))
     
         localStorage.setItem(
             "customer",
-            JSON.stringify({ userDto: customer, cartList: [], token })
+            JSON.stringify({ userDto: customer, cartList: updatedCart, token })
         )
 
     }
@@ -83,7 +85,7 @@ const PaymentPage = () => {
                 await makeOrder(token, customer.id, "CARD")
                 persistAuth() 
 
-                navigate("/payment/success")
+                navigate("/payment/success", {replace: true})
 
             } catch (orderErr) {
                 
@@ -102,6 +104,10 @@ const PaymentPage = () => {
             navigate("/payment/failure", { state: { reason: err.message } })
         } 
 
+    }
+
+    if(!totalAmount || totalAmount <= 0){
+        return navigate('/unauthorized-access', {replace: true})
     }
 
     return (

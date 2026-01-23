@@ -198,6 +198,16 @@ const EditOrderPage = () => {
                     disabled
                     />
                 </div>
+
+                <div className="col-md-6 mb-3">
+                    <label className="form-label">Product Id</label>
+                    <input
+                    type="text"
+                    className="form-control"
+                    value={order.product.id}
+                    disabled
+                    />
+                </div>
                 
                 </div>
 

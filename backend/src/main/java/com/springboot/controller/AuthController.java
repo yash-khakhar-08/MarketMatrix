@@ -1,5 +1,7 @@
 package com.springboot.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,7 @@ import com.springboot.Dto.LoginRequestDto;
 import com.springboot.Dto.LoginResponseDto;
 import com.springboot.Dto.ResponseMessageDto;
 import com.springboot.Dto.UserDto;
+import com.springboot.models.User;
 import com.springboot.service.AuthService;
 
 @RestController
@@ -69,6 +72,105 @@ public class AuthController {
 
         }
          
+    }
+
+    @PostMapping("/verifyEmail")
+    public ResponseEntity<?> verifyEmail(@RequestBody Map<String, String> payload){
+        
+        ResponseMessageDto response = new ResponseMessageDto();
+
+        try {
+
+            String email = payload.get("email");
+
+            User user = authService.isEmailExists(email);
+            
+            if(user == null){
+                throw new RuntimeException("Email does not exists");
+            }    
+
+            authService.generateOtpCode(email, user,"MarketMatrix - Forgot Password OTP");
+
+            response.setMessage("Email Verified");    
+            return new ResponseEntity<>(response, HttpStatus.OK);
+
+        } catch(Exception e){
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        
+    }
+
+    @PostMapping("/verifyOtpCode")
+    public ResponseEntity<?> verifyOtpCode(@RequestBody Map<String, String> payload){
+        
+        ResponseMessageDto response = new ResponseMessageDto();
+
+        try {
+
+            String email = payload.get("email");
+
+            Integer optCode = Integer.valueOf(payload.get("otp"));
+
+            authService.verifyOtpCode(email, optCode);
+
+            response.setMessage("Otp Verified");    
+            return new ResponseEntity<>(response, HttpStatus.OK);
+
+        } catch(Exception e){
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        
+    }
+
+    @PostMapping("/updatePassword")
+    public ResponseEntity<?> updatePassword(@RequestBody Map<String, String> payload){
+        
+        ResponseMessageDto response = new ResponseMessageDto();
+
+        try {
+
+            String email = payload.get("email");
+
+            Integer optCode = Integer.valueOf(payload.get("otp"));
+
+            String password = payload.get("password");
+
+            authService.updatePassword(email, optCode, password);
+
+            response.setMessage("Password Updated Successfully");    
+            return new ResponseEntity<>(response, HttpStatus.OK);
+
+        } catch(Exception e){
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }   
+    }
+
+    @PostMapping("/verifyAccount")
+    public ResponseEntity<?> verifyAccount(@RequestBody Map<String, String> payload){
+        
+        ResponseMessageDto response = new ResponseMessageDto();
+
+        try {
+
+            String email = payload.get("email");
+
+            Integer optCode = Integer.valueOf(payload.get("otp"));
+
+            authService.verifyOtpCode(email, optCode);
+
+            authService.updateAccountStatus(email,"active");
+
+            response.setMessage("Account Verified successfully");    
+            return new ResponseEntity<>(response, HttpStatus.OK);
+
+        } catch(Exception e){
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        
     }
 
 }

@@ -44,8 +44,8 @@ public class User {
     private String jwtToken;
 
     @Builder.Default
-    @Column(nullable = false, columnDefinition = "varchar(20) default 'active'")
-    private String status = "active";
+    @Column(nullable = false, columnDefinition = "varchar(20) default 'pending'")
+    private String status = "pending";
     
     @OneToOne
     private Address address;
