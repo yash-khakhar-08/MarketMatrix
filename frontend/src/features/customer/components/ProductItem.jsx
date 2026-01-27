@@ -67,7 +67,7 @@ const ProductItem = ({ productItems, categoryId }) => {
                                 state={{ product, categoryId }}
                             >
                                 <img
-                                    src={`http://localhost:8080/products/${product.productImage}`}
+                                    src={`${product.productImage}`}
                                     alt={product.productName}
                                     className="product-img"
                                 />
@@ -76,7 +76,7 @@ const ProductItem = ({ productItems, categoryId }) => {
                             <div className="product-info">
                                 <h5>{product.productName}</h5>
                                 <p className="text-muted">
-                                    Price: <strong>{product.productPrice}</strong> rs
+                                    Price: <strong>₹{product.productPrice}</strong>
                                 </p>
 
                                 <button

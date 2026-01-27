@@ -4,9 +4,6 @@ import java.security.SecureRandom;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,7 +19,6 @@ import com.springboot.models.User;
 import com.springboot.repository.UserRepo;
 
 import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 
 @Service
 public class AuthService {  
@@ -40,7 +36,7 @@ public class AuthService {
     private CartInfoService cartInfoService;
 
     @Autowired
-    private JavaMailSender mailSender;
+    private EmailService emailService;
 
     public LoginResponseDto login(LoginRequestDto loginRequestDto) throws MessagingException{
         
@@ -72,7 +68,7 @@ public class AuthService {
                 user.setOtpCode(otpCode);
                 userRepo.save(user);
 
-                sendAccountVerificationLink(user.getEmail(), otpCode);
+                emailService.sendAccountVerificationEmail(user.getEmail(), otpCode);
 
                 throw new RuntimeException("Account Verification is pending");
             }
@@ -141,48 +137,10 @@ public class AuthService {
 
         userRepo.save(newUser);
 
-        sendAccountVerificationLink(userDto.getEmail(), otpCode);
+        emailService.sendAccountVerificationEmail(userDto.getEmail(), otpCode);
 
         return true;
         
-    }
-
-    @Async
-    public void sendAccountVerificationLink(String email, int otpCode)
-     throws MessagingException{
-
-        String verificationLink = "http://localhost:3000/verify-account?email="+email+"&token="+otpCode;
-
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
-        helper.setTo(email);
-        helper.setSubject("MarketMatrix - Account Verification");
-        helper.setFrom("yashkhakhkhar455@gmail.com");
-
-        String htmlContent = """
-            <html>
-                <body>
-                    <h2>Verify your account</h2>
-                    <p>Click the button below to verify your account:</p>
-                    <a href="%s"
-                       style="padding:10px 16px;
-                              background:#4CAF50;
-                              color:white;
-                              text-decoration:none;
-                              border-radius:5px;">
-                        Verify Account
-                    </a>
-                    <p>If the button doesn’t work, copy & paste this link:</p>
-                    <p>%s</p>
-                </body>
-            </html>
-        """.formatted(verificationLink, verificationLink);
-        
-        helper.setText(htmlContent, true);
-
-        mailSender.send(message);
-
     }
 
     public User isEmailExists(String email){
@@ -203,21 +161,7 @@ public class AuthService {
         user.setOtpCode(otpCode);
         userRepo.save(user);
 
-        sendOtpCode(email, otpCode, subject);
-
-    }
-
-    @Async
-    public void sendOtpCode(String email, int otpCode, String subject){
-
-        SimpleMailMessage message = new SimpleMailMessage();
-
-        message.setTo(email);
-        message.setSubject(subject);
-        message.setText("OTP Code: " + otpCode);
-        message.setFrom("yashkhakhkhar455@gmail.com");
-
-        mailSender.send(message);
+        emailService.sendOtpCodeEmail(email, otpCode, subject);
 
     }
 

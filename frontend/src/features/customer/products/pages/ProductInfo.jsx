@@ -108,7 +108,7 @@ const ProductInfo = () => {
                 <div className="row">
                     <div className="col-md-4 col-sm-6 col-12">
                         <img
-                            src={`http://localhost:8080/products/${product.productImage}`}
+                            src={`${product.productImage}`}
                             alt={product.productName}
                             style={{ height: 500, objectFit: "cover", width: "100%" }}
                         />
@@ -116,7 +116,7 @@ const ProductInfo = () => {
 
                     <div className="col-md-8 col-sm-6 col-12 d-flex flex-column justify-content-center">
                         <h3 className="text-primary fw-bold">{product.productName}</h3>
-                        <p><strong>Price:</strong> {product.productPrice} rs</p>
+                        <p><strong>Price:</strong> ₹{product.productPrice}</p>
                         <p><strong>Description:</strong> {product.productDesc}</p>
                         <p><strong>Stock:</strong> {product.productQty} left</p>
 

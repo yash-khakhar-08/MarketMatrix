@@ -68,7 +68,7 @@ export default function SearchPage() {
                             state={{ product, categoryId: product.category.id }}
                         >
                             <img
-                                src={`http://localhost:8080/products/${product.productImage}`}
+                                src={`${product.productImage}`}
                                 alt={product.productName}
                                 className="product-img"
                             />
@@ -77,7 +77,7 @@ export default function SearchPage() {
                         <div className="product-info">
                             <h5>{product.productName}</h5>
                             <p className="text-muted">
-                                Price: <strong>{product.productPrice}</strong> rs
+                                Price: <strong>₹{product.productPrice}</strong>
                             </p>
 
                             <button

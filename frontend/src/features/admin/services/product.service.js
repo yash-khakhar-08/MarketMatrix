@@ -5,7 +5,6 @@ export const addProduct = async (token, payload) => {
     const response = await fetch(`${BACKEND_API_URL}/admin/addProduct`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
         body: payload
@@ -13,7 +12,7 @@ export const addProduct = async (token, payload) => {
 
     if(response.status === 401){
         throw new Error('Your session is over. Please login again.')
-    } else{
+    } else if(response.status !== 200){
         throw new Error('Internal Server Error.')
     }
 

@@ -93,13 +93,13 @@ const ViewOrderPage = () => {
             <div key={order.id} className="cart-item d-flex align-items-center mb-3">
             <Link to="">
                 <img
-                src={`http://localhost:8080/products/${order.product?.productImage}`}
+                src={`${order.product?.productImage}`}
                 alt={order.product?.productName || "Product"}
                 />
             </Link>
             <div className="details">
                 <h5>{order.product?.productName?.toUpperCase()}</h5>
-                <p className="price">Subtotal: {order.purchaseAmt}</p>
+                <p className="price">Subtotal: ₹{order.purchaseAmt}</p>
                 <div className="order-info mt-2">
                 <p className="mb-1">
                     <strong>Order Id:</strong> {order.id}

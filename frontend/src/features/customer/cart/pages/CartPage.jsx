@@ -162,7 +162,7 @@ const CartPage = () => {
                                 }}
                             >
                                 <img
-                                    src={`http://localhost:8080/products/${value.product.productImage}`}
+                                    src={`${value.product.productImage}`}
                                     alt="Product"
                                 />
                             </Link>
@@ -171,7 +171,7 @@ const CartPage = () => {
                                 <h5>{value.product.productName}</h5>
 
                                 <p className="price">
-                                    Product Price: <span>{value.product.productPrice}</span> rs
+                                    Product Price: <span>₹{value.product.productPrice}</span>
                                 </p>
 
                                 { value.product.productQty > 0 && 
@@ -200,7 +200,7 @@ const CartPage = () => {
                                     </button>
                                 </div>
                                 <p className="price">
-                                    Subtotal: <span>{value.purchaseAmt}</span> rs
+                                    Subtotal: <span>₹{value.purchaseAmt}</span>
                                 </p>
 
                                 </>
@@ -230,8 +230,7 @@ const CartPage = () => {
                     <h4>
                         Total:{' '}
                         <span className="text-danger grand-total">
-                            {totalAmount}
-                            rs
+                            ₹{totalAmount}
                         </span>
                     </h4>
 

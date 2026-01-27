@@ -2,16 +2,23 @@ package com.springboot.service;
 
 import com.springboot.JsonResponse.OrderResponse;
 import com.springboot.JsonResponse.ProductResponse;
+import com.springboot.events.OrderCancelEvent;
+import com.springboot.events.OrderDeliveredEvent;
+import com.springboot.events.OrderPlacedEvent;
 import com.springboot.models.CartInfo;
 import com.springboot.models.Orders;
 import com.springboot.models.Product;
 import com.springboot.models.User;
 import com.springboot.repository.OrdersRepo;
 import com.springboot.repository.ProductRepo;
+
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 @Service
@@ -28,47 +35,48 @@ public class OrdersService {
     
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
     
+    @Transactional
     public boolean saveOrder(int userId, String paymentMode){
         
-        try{
-            
-            List<CartInfo> cartInfo = cartInfoService.getByUser(userId);
-            if(cartInfo != null && !ObjectUtils.isEmpty(cartInfo)){
+        List<CartInfo> cartInfo = cartInfoService.getByUser(userId);
 
-                for(CartInfo cart: cartInfo){
+        List<Orders> orderList = new ArrayList<>();
 
-                    if(cart.getProduct().getProductQty() > 0){
+        if (ObjectUtils.isEmpty(cartInfo)) return false;
 
-                        Orders orders = new Orders();
-                        orders.setPaymentMode(paymentMode);
-                        orders.setProduct(cart.getProduct());
-                        orders.setPurchaseAmt(cart.getPurchaseAmt());
-                        orders.setPurchaseQty(cart.getPurchaseQty());
-                        orders.setStatus("Pending");
-                        orders.setUser(cart.getUser());
+        for(CartInfo cart: cartInfo){
 
-                        ordersRepo.save(orders);
-                        
-                        Product product = cart.getProduct();
-                        product.setProductQty( product.getProductQty() - cart.getPurchaseQty() );
-                        productRepo.save(product);
-                        
-                        cartInfoService.removeFromCart(cart.getId());
-
-                    }
-                    
-                }
-
-                return true;
-
+            if (cart.getProduct().getProductQty() < cart.getPurchaseQty()) {
+                throw new RuntimeException("Insufficient stock");
             }
+
+            Orders orders = new Orders();
+            orders.setPaymentMode(paymentMode);
+            orders.setProduct(cart.getProduct());
+            orders.setPurchaseAmt(cart.getPurchaseAmt());
+            orders.setPurchaseQty(cart.getPurchaseQty());
+            orders.setStatus("Pending");
+            orders.setUser(cart.getUser());
+
+            ordersRepo.save(orders);
+
+            orderList.add(orders);
+                        
+            Product product = cart.getProduct();
+            product.setProductQty( product.getProductQty() - cart.getPurchaseQty());
+            productRepo.save(product);
+                        
+            cartInfoService.removeFromCart(cart.getId());
             
-        } catch(Exception e){
-            System.out.println(e);
         }
-        
-        return false;
+
+        applicationEventPublisher.publishEvent(new OrderPlacedEvent(orderList));
+
+        return true;
         
     }
     
@@ -113,20 +121,23 @@ public class OrdersService {
         
     }
     
+    @Transactional
     public boolean cancelOrder(int orderId){
         
         try{
             
-            Orders orders = ordersRepo.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+            Orders order = ordersRepo.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
             
-            if(orders != null && !ObjectUtils.isEmpty(orders)){
+            if(!ObjectUtils.isEmpty(order)){
 
-                orders.setStatus("Canceled");
-                ordersRepo.save(orders);
+                order.setStatus("Canceled");
+                ordersRepo.save(order);
 
-                Product product = orders.getProduct();
-                product.setProductQty(product.getProductQty() + orders.getPurchaseQty());
+                Product product = order.getProduct();
+                product.setProductQty(product.getProductQty() + order.getPurchaseQty());
                 productRepo.save(product);
+
+                applicationEventPublisher.publishEvent(new OrderCancelEvent(order));
                 
                 return true;
             }
@@ -186,22 +197,29 @@ public class OrdersService {
 
     }
 
+    @Transactional
     public void updateOrderStatus(String orderId, String status){
 
-        Orders orders = getOrderById(Integer.valueOf(orderId));
+        Orders order = getOrderById(Integer.valueOf(orderId));
 
-        orders.setStatus(status);
+        order.setStatus(status);
 
         if(status.equals("Canceled")){
 
-            Product product = orders.getProduct();
-            product.setProductQty(product.getProductQty() + orders.getPurchaseQty());
+            Product product = order.getProduct();
+            product.setProductQty(product.getProductQty() + order.getPurchaseQty());
             productRepo.save(product);
 
         }
 
-        ordersRepo.save(orders);
+        ordersRepo.save(order);
 
+        if(status.equals("Delivered")){
+            applicationEventPublisher.publishEvent(new OrderDeliveredEvent(order));
+        } else if(status.equals("Canceled")){
+            applicationEventPublisher.publishEvent(new OrderCancelEvent(order));
+        }
+        
     }
 
 }

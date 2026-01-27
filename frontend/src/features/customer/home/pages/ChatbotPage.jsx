@@ -304,7 +304,7 @@ export default function ChatbotPage(props) {
                                 <Link to="/productInfo" state={{ product: p, categoryId: p.category.id }}>
                                 
                                 <img
-                                src={`http://localhost:8080/products/${p.productImage}`}
+                                src={`${p.productImage}`}
                                 alt={p.productName}
                                 style={{ width: "100%", objectFit: "cover", height: "200px", padding: "5px" }}
                                 />

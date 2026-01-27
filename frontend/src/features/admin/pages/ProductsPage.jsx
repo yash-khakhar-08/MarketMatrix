@@ -137,7 +137,7 @@ const ProductsPage = () => {
                           <td>{product.id}</td>
                           <td className="text-center">
                             <img
-                              src={`http://localhost:8080/products/${product.productImage}`}
+                              src={`${product.productImage}`}
                               alt={product.productName}
                               width="60"
                               height="60"

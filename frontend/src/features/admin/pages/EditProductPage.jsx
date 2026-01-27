@@ -152,7 +152,7 @@ const EditProductPage = () => {
                 </div>
 
                 <div className="col-md-6 mb-3">
-                    <label className="form-label">Price</label>
+                    <label className="form-label">Current Price</label>
                     <input
                     type="number"
                     name="productPrice"
@@ -180,7 +180,7 @@ const EditProductPage = () => {
 
                 <div className="row">
                 <div className="col-md-6 mb-3">
-                    <label className="form-label">Quantity</label>
+                    <label className="form-label">Available Quantity</label>
                     <input
                     min="0"
                     type="number"
@@ -210,7 +210,7 @@ const EditProductPage = () => {
                     <label className="form-label">Current Image</label>
                     <br />
                     <img
-                    src={`http://localhost:8080/products/${existingImage}`}
+                    src={`${existingImage}`}
                     alt="product"
                     width="200"
                     style={{ borderRadius: "8px" }}

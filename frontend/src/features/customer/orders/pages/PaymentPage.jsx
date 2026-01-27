@@ -151,7 +151,7 @@ const PaymentPage = () => {
                     <button className="btn btn-success" 
                         onClick={handlePayment}
                         disabled={loading}>
-                        Pay Now
+                        Pay ₹{totalAmount} Now
                     </button>
                 </div>
 

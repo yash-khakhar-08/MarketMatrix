@@ -74,7 +74,6 @@ public class HomeController {
             return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
         
-        
     }
     
     @PostMapping("/register")

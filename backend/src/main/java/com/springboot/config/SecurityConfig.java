@@ -71,8 +71,8 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) 
                  .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/login","/getProducts","/getCategories",
-                            "/getRelatedProducts","/register","/search-product", 
+                    .requestMatchers("/getProducts","/getCategories",
+                            "/getRelatedProducts","/search-product", 
                             "/api/auth/**", "/filterProducts/**",
                             "/getAllProducts").permitAll()  
                     .requestMatchers("/user/**").hasRole("USER")

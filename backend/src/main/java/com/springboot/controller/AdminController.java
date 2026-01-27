@@ -34,6 +34,7 @@ import com.springboot.JsonResponse.OrderResponse;
 import com.springboot.models.Category;
 import com.springboot.models.Product;
 import com.springboot.service.CategoryService;
+import com.springboot.service.ImageUploadService;
 import com.springboot.service.OrdersService;
 import com.springboot.service.ProductService;
 import com.springboot.service.UserService;
@@ -54,6 +55,9 @@ public class AdminController {
 
     @Autowired
     private OrdersService ordersService;
+
+    @Autowired
+    private ImageUploadService imageUploadService;
     
     @GetMapping("/getCategory")
     public ResponseEntity<?> getCategory(){
@@ -126,15 +130,17 @@ public class AdminController {
             CategoryResponse category = objectMapper.readValue(selectedCategory, CategoryResponse.class);
             product.setCategory(Category.builder().id(category.getId()).catName(category.getCatName()).sectionName(category.getSectionName()).build());
             
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            //String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
 
-            Path uploadPath = Paths.get("uploads/products");
-            Files.createDirectories(uploadPath);
+            //Path uploadPath = Paths.get("uploads/products");
+            //Files.createDirectories(uploadPath);
 
-            Path filePath = uploadPath.resolve(fileName);
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            //Path filePath = uploadPath.resolve(fileName);
+            //Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            product.setProductImage(fileName);
+            String imageUrl = imageUploadService.uploadProductImage(file);
+
+            product.setProductImage(imageUrl);
             productService.addProduct(product);
 
             return ResponseEntity.ok(product);

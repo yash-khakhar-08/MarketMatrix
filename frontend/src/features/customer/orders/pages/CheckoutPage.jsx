@@ -4,6 +4,7 @@ import { makeOrder } from "../services/order.service"
 import { saveAddress } from "../../profile/services/profile.service"
 import { setAuthData } from "../../../auth/authSlice"
 import { useNavigate } from "react-router-dom"
+import Swal from "sweetalert2"
 
 const CheckoutPage = () => {
 
@@ -13,6 +14,7 @@ const CheckoutPage = () => {
 
     const [paymentMode, setPaymentMode] = useState("COD")
     const [showAddressModal, setShowAddressModal] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     const [address, setAddress] = useState({
         blockNo: "",
@@ -65,28 +67,51 @@ const CheckoutPage = () => {
     const placeOrder = async () => {
 
         try {
+            
+            setLoading(true)
+
             await makeOrder(token, customer.id, paymentMode)
-            persistAuth(customer, cart.filter(item => item.product.productQty === 0)) 
-            alert("Order placed successfully!")
+
+            persistAuth(customer, cart.filter(item => item.product.productQty === 0))
+
+            Swal.fire("Order Confirmed", "Your order has been placed successfully", "success")
+
             navigate('/orders', {replace: true})
+
         } catch (err) {
             console.error(err)
             alert("Failed to place order. Try again!")
+        } finally{
+            setLoading(false)
         }
     }
 
-    const handlePayment = () => {
+    const handlePayment = async () => {
 
         if (!customer.address) {
-            alert("Address is required to place order!")
+            Swal.fire("Missing Address", "Delivery Address is required to place order!", "error")
             return
         }
+
+        const result = await Swal.fire({
+            title: "Confirm Order",
+            text: "Do you want to place this order?",
+            icon: "question", 
+            showCancelButton: true,
+            confirmButtonColor: "#28a745",
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: "Yes, place order",
+            cancelButtonText: "Cancel"
+        })
+
+        if (!result.isConfirmed) return
 
         if (paymentMode === "COD") {
             placeOrder()
         } else {
             navigate("/payment", { state: { token, totalAmount, customerId: customer.id } })
         }
+
     }
 
     return (
@@ -117,13 +142,13 @@ const CheckoutPage = () => {
                 type="button"
                 className="btn btn-sm btn-secondary mt-2"
                 onClick={() => setShowAddressModal(true)}
-                >
+                disabled={loading}>
                 Edit Address
                 </button>
             </div>
 
             <h4 className="text-primary text-center mb-3">
-                Grand Total: <span className="text-dark">{totalAmount} rs.</span>
+                Grand Total: <span className="text-dark">₹{totalAmount}</span>
             </h4>
 
             <h5 className="mt-4">Payment Options</h5>
@@ -134,6 +159,7 @@ const CheckoutPage = () => {
                 name="payment"
                 id="COD"
                 checked={paymentMode === "COD"}
+                disabled={loading}
                 onChange={() => handlePaymentModeChange("COD")}
                 />
                 <label className="form-check-label">Cash on Delivery (COD)</label>
@@ -145,6 +171,7 @@ const CheckoutPage = () => {
                 name="payment"
                 id="Card"
                 checked={paymentMode === "Card"}
+                disabled={loading}
                 onChange={() => handlePaymentModeChange("Card")}
                 />
                 <label className="form-check-label">Stripe Pay</label>
@@ -154,9 +181,15 @@ const CheckoutPage = () => {
             <button
                 type="button"
                 className="btn btn-success btn-block mt-4"
-                onClick={handlePayment}
+                onClick={() => handlePayment()}
+                disabled={loading}
             >
-                {paymentMode === "COD" ? "Place Order" : "Make Payment"}
+                {paymentMode === "COD" ? 
+                    loading ? "Placing Order..." : "Place Order" 
+                    : 
+                    "Make Payment"
+                }
+
             </button>
             }
             </form>
