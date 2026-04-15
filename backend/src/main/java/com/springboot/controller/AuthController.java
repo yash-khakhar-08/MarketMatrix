@@ -16,6 +16,7 @@ import com.springboot.Dto.ResponseMessageDto;
 import com.springboot.Dto.UserDto;
 import com.springboot.models.User;
 import com.springboot.service.AuthService;
+import com.springboot.service.GoogleAuthService;
 
 @RestController
 @RequestMapping("/api/auth/")
@@ -23,6 +24,9 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private GoogleAuthService googleAuthService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto){
@@ -169,6 +173,24 @@ public class AuthController {
         } catch(Exception e){
             response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        
+    }
+
+    @PostMapping("/getLoginData")
+    public ResponseEntity<?> getLoginData(@RequestBody Map<String, String> payload){
+        
+         try {
+
+            LoginResponseDto loginResponseDto = googleAuthService.getLoginData(payload.get("token")); 
+        
+            return new ResponseEntity<>(loginResponseDto, HttpStatus.OK);
+
+        } catch(Exception e){
+            
+            ResponseMessageDto response = new ResponseMessageDto();
+            response.setMessage(e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
         
     }

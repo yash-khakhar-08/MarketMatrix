@@ -40,7 +40,8 @@ import {
     Login,
     Register,
     ForgotPasswordPage,
-    AccountActivationPage
+    AccountActivationPage,
+    OAuthSuccess
 } from "../features/auth"
 
 import PaymentPage from "../features/customer/orders/pages/PaymentPage"
@@ -56,6 +57,7 @@ const AppRoutes = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="/verify-account" element={<AccountActivationPage />} />
+                <Route path="/oauth-success" element={<OAuthSuccess />} />
             </Route>
 
             <Route element={<CustomerLayout />}>

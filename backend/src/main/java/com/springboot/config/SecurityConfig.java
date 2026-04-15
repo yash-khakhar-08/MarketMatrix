@@ -16,11 +16,16 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.springboot.Dto.LoginResponseDto;
+import com.springboot.service.GoogleAuthService;
+import com.springboot.service.JwtService;
 
 
 @Configuration
@@ -30,7 +35,9 @@ public class SecurityConfig {
    
     @Autowired
     private JwtFilter jwtFilter;
-    
+
+    @Autowired
+    private GoogleAuthService googleAuthService;
     
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -52,45 +59,68 @@ public class SecurityConfig {
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider(){
         
-        System.out.println("dao auth method ");
+        // System.out.println("dao auth method ");
         
-        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider(getDetailsService());
-        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+        // DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider(getDetailsService());
+        // daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+
+        System.out.println("dao auth method");
+
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+
+        provider.setUserDetailsService(getDetailsService());
+        provider.setPasswordEncoder(passwordEncoder());
+
+        return provider;
         
-        return daoAuthenticationProvider;
+        //return daoAuthenticationProvider;
         
     }
     
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-        
-        System.out.println("Security chain method ");
-        
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
-                
-            .csrf(csrf -> csrf.disable()) 
-                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/getProducts","/getCategories",
-                            "/getRelatedProducts","/search-product", 
-                            "/api/auth/**", "/filterProducts/**",
-                            "/getAllProducts").permitAll()  
-                    .requestMatchers("/user/**").hasRole("USER")
-                    .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
-                    .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
+                .requestMatchers("/getProducts","/getCategories",
+                        "/getRelatedProducts","/search-product",
+                        "/api/auth/**", "/filterProducts/**",
+                        "/getAllProducts", "/login/**").permitAll()
+                .requestMatchers("/user/**").hasRole("USER")
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
                 .anyRequest().authenticated()
-                    
             )
-            .httpBasic(httpBasic -> httpBasic.disable())
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                    .permitAll()
+
+            .oauth2Login(oauth2 -> oauth2
+                .successHandler((request, response, authentication) -> {
+
+                    OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+
+                    String email = oAuth2User.getAttribute("email");
+                    String name = oAuth2User.getAttribute("name");
+
+                    System.out.println("Email: " + email);
+                    System.out.println("Name: " + name);
+
+                    String token = googleAuthService.login(email, name);
+
+                    // Redirect to frontend
+                    response.sendRedirect("http://localhost:3000/oauth-success?token=" + token);
+
+                })
             )
-                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);  
-        
+
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+            )
+
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
-        
     }
     
     @Bean

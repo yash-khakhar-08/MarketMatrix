@@ -98,4 +98,5 @@ public class Orders {
     public void setPaymentMode(String paymentMode) {
         this.paymentMode = paymentMode;
     }
+
 }

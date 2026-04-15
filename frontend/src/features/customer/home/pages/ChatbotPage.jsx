@@ -4,6 +4,8 @@ import { Link, useNavigate } from "react-router-dom"
 import { addToCart } from "../../cart/services/cart.service"
 import { setAuthData } from "../../../auth/authSlice"
 
+//uv run uvicorn main:app --reload
+
 export default function ChatbotPage(props) {
 
     const {customer, cart, token} = useSelector(state => state.auth)
@@ -164,6 +166,9 @@ export default function ChatbotPage(props) {
                 purchaseQty: 1,
                 userId: customer?.id
             }
+
+            console.log(payload)
+            console.log(token)
 
             const newCartItem = await addToCart(token, payload)
             

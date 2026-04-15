@@ -128,6 +128,21 @@ const Login = () => {
                         {loading ? "Signing in..." : "Sign In"}
                     </button>
 
+                    <button
+                        type="button"
+                        className="btn btn-outline-dark btn-block mt-3 d-flex align-items-center justify-content-center"
+                        onClick={() => {
+                            window.location.href = "http://localhost:8080/oauth2/authorization/google";
+                        }}
+                    >
+                        <img
+                            src="https://developers.google.com/identity/images/g-logo.png"
+                            alt="Google"
+                            style={{ width: 20, marginRight: 10 }}
+                        />
+                        Continue with Google
+                    </button>
+
                     <div className="text-center mt-3">
                         <Link to="/forgot-password" className="text-muted">
                             Forgot Password?

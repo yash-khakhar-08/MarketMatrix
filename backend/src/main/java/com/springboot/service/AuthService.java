@@ -40,7 +40,7 @@ public class AuthService {
 
     public LoginResponseDto login(LoginRequestDto loginRequestDto) throws MessagingException{
         
-        Authentication auth =  authManager.authenticate(
+        Authentication auth = authManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 loginRequestDto.getEmail(),
                 loginRequestDto.getPassword()

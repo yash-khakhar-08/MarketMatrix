@@ -1,5 +1,6 @@
 package com.springboot.service;
 
+import com.springboot.Dto.OrderDto;
 import com.springboot.JsonResponse.OrderResponse;
 import com.springboot.JsonResponse.ProductResponse;
 import com.springboot.events.OrderCancelEvent;
@@ -38,6 +39,12 @@ public class OrdersService {
 
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
+
+    private final OrderProducer producer;
+
+    public OrdersService(OrderProducer producer){
+        this.producer = producer;
+    }
     
     @Transactional
     public boolean saveOrder(int userId, String paymentMode){
@@ -62,7 +69,8 @@ public class OrdersService {
             orders.setStatus("Pending");
             orders.setUser(cart.getUser());
 
-            ordersRepo.save(orders);
+            //ordersRepo.save(orders);
+            producer.sendOrder(new OrderDto("Order placed by: " + orders.getUser().getFullName()));
 
             orderList.add(orders);
                         
@@ -74,7 +82,7 @@ public class OrdersService {
             
         }
 
-        applicationEventPublisher.publishEvent(new OrderPlacedEvent(orderList));
+        //applicationEventPublisher.publishEvent(new OrderPlacedEvent(orderList));
 
         return true;
         

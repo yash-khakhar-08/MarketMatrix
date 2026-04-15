@@ -117,3 +117,23 @@ export const verifyAccount = async (payload) => {
     return data
 
 }
+
+export const getLoginData = async (payload) => {
+
+    const response = await fetch(`${BACKEND_API_URL}/api/auth/getLoginData`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    })
+
+    const data = await response.json()
+
+    if(!response.ok){
+        throw new Error(data.message)
+    }
+
+    return data
+
+}

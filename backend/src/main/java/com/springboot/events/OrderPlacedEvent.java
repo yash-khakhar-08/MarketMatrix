@@ -6,11 +6,13 @@ import com.springboot.models.Orders;
 
 public class OrderPlacedEvent {
 
-    private final List<Orders> orders;
+    private List<Orders> orders;
 
     public OrderPlacedEvent(List<Orders> orders) {
         this.orders = orders;
     }
+
+    public OrderPlacedEvent(){}
 
     public List<Orders> getOrders() {
         return orders;
