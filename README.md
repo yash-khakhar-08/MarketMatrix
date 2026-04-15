@@ -8,16 +8,16 @@ The backend uses REST API developed in Spring Boot for clean, structured code wi
 
 ## Features (User side)
 
-✅ User authentication (Login/Register)
-✅ Product listing & search
-✅ Add to cart and place order
-✅ View order and cancel order
+✅ User authentication (Login/Register)  
+✅ Product listing & search  
+✅ Add to cart and place order  
+✅ View order and cancel order  
 
-## Features (Admin side)
+## Features (Admin side)  
 
-✅ Admin authentication (Login)
-✅ Manage category and Product
-✅ Manage Customers and Orders
+✅ Admin authentication (Login)  
+✅ Manage category and Product  
+✅ Manage Customers and Orders  
 
 ---
 
