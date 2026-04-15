@@ -101,7 +101,15 @@ spring.security.oauth2.client.registration.google.scope=profile,email
 spring.security.oauth2.client.provider.google.authorization-uri=https://accounts.google.com/o/oauth2/v2/auth?prompt=select_account
 ```
 
----
+---  
+
+### Step 3: Add the following configuration in .env file for React app  
+
+```
+REACT_APP_BACKEND_API_URL=http://localhost:8080
+
+REACT_APP_STRIPE_PUBLISHABLE_KEY=YOUR_STRIPE_PUBLISHABLE_KEY
+```
 
 ## 🔑 Notes
 
